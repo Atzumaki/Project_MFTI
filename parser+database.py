@@ -1,7 +1,29 @@
 import sqlite3
 import cursor
 import requests
+import datetime
 from bs4 import BeautifulSoup
+
+current_date = ".".join((datetime.datetime.now().strftime('%d-%m-%Y')).split('-'))
+print(current_date)
+
+
+def check_date(date):
+    if "час назад" in date:
+        return current_date
+    elif "вчера" in date:
+        try:
+            return str(int(current_date.split('.')[0]) - 1) + current_date.split('.')[1] + current_date.split('.')[2]
+        except Exception as e:
+            return ""
+    else:
+        return_date = ''
+        for item in date:
+            if item == 'в':
+                break
+            return_date += item
+        return return_date[:-2]
+
 
 conn = sqlite3.connect('articles.db')
 cursor = conn.cursor()
@@ -12,9 +34,12 @@ CREATE TABLE IF NOT EXISTS articles (
     title TEXT NOT NULL,
     link TEXT NOT NULL,
     author TEXT NOT NULL,
-    content TEXT NOT NULL
+    content TEXT NOT NULL,
+    date TEXT NOT NULL
 )
 ''')
+
+
 
 conn.commit()
 
@@ -30,11 +55,15 @@ for article in data.findAll('h2', class_='item-title text-short'):
         link = 'https://utv.ru/' + article.a['href']
         response_link = requests.get(link).text
         data_link = BeautifulSoup(response_link, 'html.parser')
+        date = "-"
+        for day in data_link.findAll('div', class_="container-item__metrics item-metrics"):
+            if day.span.text is not None:
+                date = " ".join(day.span.text.split())
+                date = check_date(date)
         author = "-"
         for elements in data_link.findAll('div', class_='container-item__author'):
             if elements.a.text is not None:
-                cleaned_text = " ".join(elements.a.text.split())
-                author = cleaned_text
+                author = " ".join(elements.a.text.split())
         bag = []
         for elements in data_link.findAll('p'):
             if elements.text is not None:
@@ -46,17 +75,17 @@ for article in data.findAll('h2', class_='item-title text-short'):
         content = " ".join(bag)
 
         cursor.execute('''
-                        INSERT INTO articles (title, link, author, content) VALUES (?, ?, ?, ?)
-                        ''', (title, link, author, content))
+                        INSERT INTO articles (title, link, author, content, date) VALUES (?, ?, ?, ?, ?)
+                        ''', (title, link, author, content, date))
 
         conn.commit()
 
-
-cursor.execute('SELECT * FROM articles')
-users = cursor.fetchall()
-
-for user in users:
-    print(user)
-
-conn.close()
+# Вывод
+# cursor.execute('SELECT * FROM articles')
+# users = cursor.fetchall()
+#
+# for user in users:
+#     print(user)
+#
+# conn.close()
 
