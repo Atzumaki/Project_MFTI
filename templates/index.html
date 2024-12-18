@@ -32,8 +32,20 @@
 </head>
 <body>
     <div class="container my-5">
-        <h1 class="text-center mb-4">Список новостей</h1>
+        <h1 class="text-center mb-4">Новости</h1>
 
+        <!-- Форма поиска по заголовкам -->
+        <form method="get" class="row mb-4">
+            <div class="col-md-8">
+                <input type="text" name="search" class="form-control" placeholder="Поиск по заголовкам"
+                       value="{{ search_query }}">
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary w-100">Найти</button>
+            </div>
+        </form>
+
+        <!-- Фильтр по авторам -->
         <form method="get" class="mb-4">
             <select name="author" class="form-select" onchange="this.form.submit()">
                 <option value="">Все авторы</option>
@@ -45,25 +57,27 @@
             </select>
         </form>
 
+        <!-- Список новостей -->
         <div class="row">
             {% if articles %}
-                {% for title, link, content in articles %}
-                <div class="col-md-6 mb-4">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-body">
-                            <h5 class="card-title">
-                                <a href="{{ link }}" target="_blank">{{ title }}</a>
-                            </h5>
-                            <p class="card-text text-muted">
-                                {{ content[:200] }}...
-                            </p>
-                            <a href="{{ link }}" target="_blank" class="btn btn-primary btn-sm">Читать далее</a>
+                {% for title, link, content, date in articles %}
+                    <div class="col-md-6 mb-4">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <a href="{{ link }}" target="_blank">{{ title }}</a>
+                                </h5>
+                                <p class="card-text">
+                                    {{ content[:200] }}...
+                                </p>
+                                <p class="text-muted">Дата публикации: {{ date }}</p>
+                                <a href="{{ link }}" target="_blank" class="btn btn-primary btn-sm">Читать далее</a>
+                            </div>
                         </div>
                     </div>
-                </div>
                 {% endfor %}
             {% else %}
-                <p class="text-center text-muted">Новостей по выбранному автору не найдено.</p>
+                <p class="text-center text-muted">Новостей по заданным параметрам не найдено.</p>
             {% endif %}
         </div>
     </div>
