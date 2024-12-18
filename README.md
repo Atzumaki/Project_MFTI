@@ -14,3 +14,4 @@
 Функционал отличный от оригинального сайта - поиск новостей по авторам:
 ![image](https://github.com/user-attachments/assets/82d4a8e4-b67e-4825-a97e-dc0b4e21ea46)
 При нажатии кнопки читать далее переместимся в полную статью:
+![image](https://github.com/user-attachments/assets/057dd3d6-815e-49c1-bf92-f6ba70ec1f5b)
