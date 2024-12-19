@@ -15,3 +15,13 @@
 ![image](https://github.com/user-attachments/assets/82d4a8e4-b67e-4825-a97e-dc0b4e21ea46)
 При нажатии кнопки читать далее переместимся в полную статью:
 ![image](https://github.com/user-attachments/assets/057dd3d6-815e-49c1-bf92-f6ba70ec1f5b)
+Запуск проекта
+1 Копировать репозиторй
+git clone https://github.com/Atzumaki/Project_MFTI.git
+cd Project_MFTI
+2. Сделайте checkout для актульной ветки
+git checkout dev
+3. Запустите контейнеры с помощью файла bash скрипта build.sh(Команду писать внутри папки с проектом!)
+./build.sh
+4.После запуска перейдите ппо ссылке
+http://localhost:5252
