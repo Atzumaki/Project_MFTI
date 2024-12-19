@@ -2,13 +2,13 @@
 
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-echo -e "Закрытие старых контейнеров"
+echo -e "Прекращение работы прошлых докеров"
 docker-compose -f "${PROJECT_DIR}/docker-compose.yml" down
 
-echo -e "Создание билдов для сайта"
+echo -e "Построение докера"
 docker-compose -f "${PROJECT_DIR}/docker-compose.yml" build
 
-echo -e "Запуск сервисов с помощью Docker Compose..."
+echo -e "Поднятие докера"
 docker-compose -f "${PROJECT_DIR}/docker-compose.yml" up
 
-echo -e "Сайт успешно запущен!"
+echo -e "Сайт работает!!"
