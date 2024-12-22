@@ -1,12 +1,11 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.service import Service
 import sqlite3
 import requests
 import datetime
-import time
 from bs4 import BeautifulSoup
 
 
@@ -16,7 +15,7 @@ class Parser:
 
     @staticmethod
     def create_database():
-        conn = sqlite3.connect('articles.db')
+        conn = sqlite3.connect('../articles.db')
         cursor = conn.cursor()
 
         cursor.execute('''
@@ -33,10 +32,13 @@ class Parser:
         conn.close()
 
     def selenium_get(self):
-        options = webdriver.ChromeOptions()
+        options = webdriver.FirefoxOptions()
         options.add_argument('--headless')
-        driver = webdriver.Chrome(options=options)
-
+        options.add_argument('--disable-gpu')
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
+        service = Service()
+        driver = webdriver.Firefox(options=options, service=service)
         try:
             driver.get(self.url)
 
@@ -48,7 +50,7 @@ class Parser:
                 )
                 cookie_banner.click()
             except Exception:
-                print("Cookie баннер не найден, продолжаем...")
+                pass
 
             for _ in range(3):
                 button = wait.until(
@@ -63,7 +65,7 @@ class Parser:
         return html
 
     def response(self):
-        conn = sqlite3.connect('articles.db')
+        conn = sqlite3.connect('../articles.db')
         cursor = conn.cursor()
         response = requests.get(self.url)
         response.raise_for_status()
@@ -97,9 +99,22 @@ class Parser:
                     if text:
                         content.append(text)
                 content = " ".join(content)
-                cursor.execute('''
-                INSERT INTO articles (title, link, author, content, date) VALUES (?, ?, ?, ?, ?)
-                ''', (title, link, author, content, date))
+                cursor.execute('''SELECT title, date FROM articles''')
+                issue = cursor.fetchall()
+                if issue:
+                    flag = 1
+                    for title_base, date_base in issue:
+                        if title_base == title and date_base == date:
+                            flag = 0
+                            break
+                    if flag:
+                        cursor.execute('''
+                        INSERT INTO articles (title, link, author, content, date) VALUES (?, ?, ?, ?, ?)
+                        ''', (title, link, author, content, date))
+                else:
+                    cursor.execute('''
+                                    INSERT INTO articles (title, link, author, content, date) VALUES (?, ?, ?, ?, ?)
+                                    ''', (title, link, author, content, date))
 
         conn.commit()
         conn.close()

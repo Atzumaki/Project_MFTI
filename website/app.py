@@ -11,25 +11,25 @@ parser.create_database()
 parser.response()
 
 
-def get_articles_and_authors(selected_author=None, search_query=None):
-    conn = sqlite3.connect('articles.db')
+def get_articles_and_authors(selected_author=None, search_issue=None):
+    conn = sqlite3.connect('../articles.db')
     cursor = conn.cursor()
-    query = 'SELECT title, link, content, date FROM articles'
+    issue = 'SELECT title, link, content, date FROM articles'
     params = []
 
-    if selected_author and search_query:
-        query += ' WHERE author = ? AND title LIKE ? ORDER BY date DESC'
-        params.extend([selected_author, f"%{search_query}%"])
+    if selected_author and search_issue:
+        issue += ' WHERE author = ? AND title LIKE ? ORDER BY date DESC'
+        params.extend([selected_author, f"%{search_issue}%"])
     elif selected_author:
-        query += ' WHERE author = ? ORDER BY date DESC'
+        issue += ' WHERE author = ? ORDER BY date DESC'
         params.append(selected_author)
-    elif search_query:
-        query += ' WHERE title LIKE ? ORDER BY date DESC'
-        params.append(f"%{search_query}%")
+    elif search_issue:
+        issue += ' WHERE title LIKE ? ORDER BY date DESC'
+        params.append(f"%{search_issue}%")
     else:
-        query += ' ORDER BY date DESC'
+        issue += ' ORDER BY date DESC'
 
-    cursor.execute(query, params)
+    cursor.execute(issue, params)
     articles = cursor.fetchall()
 
     cursor.execute('SELECT DISTINCT author FROM articles')
@@ -42,14 +42,14 @@ def get_articles_and_authors(selected_author=None, search_query=None):
 @app.route('/')
 def index():
     selected_author = request.args.get('author')
-    search_query = request.args.get('search', '').strip()
-    articles, authors = get_articles_and_authors(selected_author, search_query)
+    search_issue = request.args.get('search', '').strip()
+    articles, authors = get_articles_and_authors(selected_author, search_issue)
 
     return render_template('index.html',
                            articles=articles,
                            authors=authors,
                            selected_author=selected_author,
-                           search_query=search_query,
+                           search_query=search_issue,
                            )
 
 
