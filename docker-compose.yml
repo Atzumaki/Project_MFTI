@@ -1,0 +1,8 @@
+services:
+  website:
+    build:
+      context: ./website
+      dockerfile: Dockerfile
+    container_name: website-container
+    ports:
+      - "5252:5252"

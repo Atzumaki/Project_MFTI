@@ -1,0 +1,6 @@
+Flask
+selenium
+requests
+beautifulsoup4
+datetime
+bs4
